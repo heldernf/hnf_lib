@@ -13,7 +13,7 @@ local function getFreeDimension()
     return targetDimension
 end
 
-function HNF.Utils.setPlayerAtFreeBucket(source)
+function hnf.setPlayerAtFreeBucket(source)
     local freeDimension = getFreeDimension(source)
     table.insert(bussyDimensions, freeDimension)
     table.sort(bussyDimensions)
@@ -23,7 +23,7 @@ function HNF.Utils.setPlayerAtFreeBucket(source)
 end
 
 -- todo: add o return player to default dimension com self
-function HNF.Utils.returnPlayerToDefaultDimension(source)
+function hnf.returnPlayerToDefaultDimension(source)
     local playerCurrentDimension = GetPlayerRoutingBucket(source)
     for i, bussyDimension in pairs(bussyDimensions) do
         if bussyDimension == playerCurrentDimension then

@@ -5,11 +5,16 @@ game "gta5"
 author "heldernf"
 description "Library for FiveM"
 
-files {
+shared_scripts {
+    "imports/main.lua",
     "imports/**/shared.lua",
-    "imports/**/client.lua",
+    "main/init.lua",
 }
 
-shared_scripts {
-    "main/imports.lua",
+server_scripts {
+    "imports/**/server.lua",
+}
+
+client_scripts {
+    "imports/**/client.lua",
 }

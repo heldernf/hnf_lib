@@ -1,5 +1,5 @@
 local antiSpamTimers = {}
-function HNF.cooldownHandler(waitTime)
+function hnf.cooldownHandler(waitTime)
     local callingFunction = debug.getinfo(2, "n").name or "unknown"
 
     if antiSpamTimers[callingFunction] then return end

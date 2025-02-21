@@ -1,4 +1,4 @@
-function HNF.createLocalVehicle(vehicle, location)
+function hnf.createLocalVehicle(vehicle, location)
     local promise = promise:new()
 
     ESX.Game.SpawnLocalVehicle(vehicle.model, location.xyz, location.w, function(vehicleEntity)

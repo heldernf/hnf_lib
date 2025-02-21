@@ -1,4 +1,4 @@
-function HNF.getOffsetPosition(center, distance, angle)
+function hnf.getOffsetPosition(center, distance, angle)
     assert(not center or type(center) ~= "vector", "")
 
     local radio = math.rad(angle)

@@ -5,7 +5,7 @@
 ---@param blip.color int
 ---@param blip.name string
 ---@return handle newBlip -- todo: test
-function HNF.createBlip(blip)
+function hnf.createBlip(blip)
     local createdBlip = AddBlipForCoord(blip.position)
     SetBlipSprite(createdBlip, blip.sprite)
     SetBlipDisplay(createdBlip, 4)

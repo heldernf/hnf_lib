@@ -1,3 +1,0 @@
-HNF = {}
-
-return HNF
