@@ -6,7 +6,15 @@ author "heldernf"
 description "Library for FiveM"
 
 files {
-    "main/init.lua",
+    "imports/init.lua",
     "imports/**/shared.lua",
     "imports/**/client.lua",
+}
+
+shared_scripts {
+    "core/global/shared.lua"
+}
+
+server_scripts {
+    "core/**/server.lua"
 }
