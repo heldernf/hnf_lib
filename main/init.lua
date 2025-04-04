@@ -1,4 +1,4 @@
-local function loadModule(self, key)
+local function loadModule(self, moduleName)
     local sharedChunk = LoadResourceFile(self.resourceName, ("%s/shared.lua"):format(self.moduleToLoad))
 
     local contextChunk, targetContextFile = nil, "shared"
@@ -7,7 +7,10 @@ local function loadModule(self, key)
         targetContextFile = self.context
     end
 
-    assert(not (not contextChunk and not sharedChunk), ("Not found module (%s)"):format(key))
+    if not contextChunk and not sharedChunk then
+        print(("^1Module (%s) not found in %s"):format(moduleName, self.resourceName))  
+        return
+    end
 
     local module, err = load(sharedChunk or contextChunk, ("@@%s/%s/%s.lua"):format(self.resourceName, self.moduleToLoad, targetContextFile))
     if module and not err then
@@ -22,16 +25,16 @@ hnf = setmetatable({
     context = IsDuplicityVersion() and "server" or "client",
     resourceName = "hnf_lib"
 }, {
-    __index = function(self, key)
-        self.moduleToLoad = "imports/" .. key
-        local success, result = pcall(loadModule, self, key)
+    __index = function(self, moduleName)
+        self.moduleToLoad = "imports/" .. moduleName
+        local success, result = pcall(loadModule, self, moduleName)
         self.moduleToLoad = nil
 
         if not success then
             print("^1" .. result)
         end
 
-        return rawget(self, key)
+        return rawget(self, moduleName)
     end
 })
 
