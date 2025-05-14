@@ -66,7 +66,7 @@ local function validateValue(valueType, expectedTypes, path)
     end
 end
 
-local function validateTable(tableCheck, key, rule, path)
+local function checkValueTypeMatch(tableCheck, key, rule, path)
     if tableCheck[key] == nil then return false, { reason = "nil-key", currentType = "nil", path = path } end
 
     local valueType = type(tableCheck[key])
@@ -84,39 +84,58 @@ local function validateTable(tableCheck, key, rule, path)
     end
 end
 
+local function processState(processingState, tableCheck, key, isValidValue, valueData)
+    if not next(processingState) then
+        processingState.remainingKeys = 0
+        for k, v in pairs(tableCheck) do
+            processingState.remainingKeys = 1 + processingState.remainingKeys
+        end
+        return processingState
+    else
+        processingState.remainingKeys = 1 - processingState.remainingKeys
+        if processingState.remainingKeys == 0 then processingState.remainingKeys = nil end
+        processingState[key] = { isValidValue = isValidValue, data = valueData }
+        return processingState
+    end
+end
+
 local function validateTableAndRules(tableCheck, allRules, path, stopIfInvalid)
     checkParams(tableCheck, allRules)
 
-    local allDatas = {}
+    local finalData, processingState = {}, {}
     for key, rule in pairs(allRules) do
         path = getTablePath(key, path)
 
-        local isValidValue, data = validateTable(tableCheck, key, rule, path)
-        if rule._handler then rule._handler(tableCheck, key, isValidValue, data) end
+        local isValidValue, valueData = checkValueTypeMatch(tableCheck, key, rule, path)
+        if rule._handler then rule._handler(tableCheck, key, isValidValue, valueData) end
         if stopIfInvalid and not isValidValue then
-            return isValidValue, data
+            return isValidValue, valueData
         elseif not isValidValue then
-            table.insert(allDatas, data)
+            table.insert(finalData, valueData)
         end
 
-        local valueType = data.invalidKey?.type or data
-        if valueType == "table" then
+        local valueType = valueData.currentType or valueData
+        if valueType == "table" and next(tableCheck[key]) then
             local allRulesClean = rule
             allRulesClean._type = nil
             allRulesClean._handler = nil
             allRulesClean._groupHandler = nil
+            isValidValue, valueData = validateTableAndRules(tableCheck[key], allRulesClean, path, stopIfInvalid)
 
-            isValidValue, data = validateTableAndRules(tableCheck[key], allRulesClean, path, stopIfInvalid)
-            if rule._groupHandler then rule._groupHandler(tableCheck) end
+            if rule._groupHandler then
+                processingState = processState(processingState, tableCheck, key, isValidValue, valueData)
+                if not processingState.remainingKeys then rule._groupHandler(tableCheck, key, processingState) end
+            end
+
             if stopIfInvalid and not isValidValue then
-                return isValidValue, data
+                return isValidValue, valueData
             elseif not isValidValue then
-                table.insert(allDatas, data)
+                table.insert(finalData, valueData)
             end
         end
     end
 
-    return #allDatas == 0, #allDatas > 0 and allDatas or nil
+    return #finalData == 0, #finalData > 0 and finalData or nil
 end
 
 function hnf.validateTableWithRules(tableCheck, allRules, stopIfInvalid)
