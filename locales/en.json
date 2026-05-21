@@ -1,0 +1,8 @@
+{
+    "pathIndexMustBeTable": "Cannot resolve path '%s'. While accessing '%s', attempted to index '%s', but it is not a table is a '%s'.",
+    "invalidPath": "Parameter '%s' received '%s'; this is not valid.",
+    "invalidArgument": "Expected '%s' for argument '%s', got '%s'.",
+    "missingConfigFiles": "No configuration files found for '%s'. Expected '%s' or '%s'.",
+    "configMustBeTable": "Config '%s' must be a table. Received '%s'.",
+    "configIsEmptyTable": "Config %s is an empty table."
+}
